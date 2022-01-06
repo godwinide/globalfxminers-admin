@@ -85,15 +85,10 @@ router.get("/approve-deposit/:id", ensureAuthenticated, async (req,res) => {
     try{
         const {id} = req.params;
         const history = await History.findById(id);
-        const user = await User.findById(history.userID);
         if(!history){
             return res.redirect("/pending_deposit");
         }else{
             await History.updateOne({_id:id}, {status:"approved"});
-            await User.updateOne({id:user.userID}, {
-                capital: user.capital ? Number(user.capital) : Number(history.amount),
-                balance: Number(user.balance) + Number(history.amount)
-            });
         }
         return res.redirect("/pending_deposit");
     }catch(err){
